@@ -3,6 +3,8 @@ use Mojo::Base 'Mojolicious::Plugin';
 
 use Sys::Syslog qw(:standard :macros);
 
+our $VERSION = '0.01';
+
 my %PRIORITY = (
   debug => LOG_DEBUG,
   error => LOG_ERR,
