@@ -47,9 +47,7 @@ plugin syslog => {access_log => 1};
 my $t = Test::Mojo->new;
 $t->app->log->level('info');
 $t->get_ok('/foo')->status_is(200)->content_is('foo');
-my $num_re = qr{\d+\.?\d*};
-like $log[-1][1], qr|^GET "/foo" \(\w+\) 200 OK \(${num_re}s, $num_re/s\)$|,
-  'access log'
+like $log[-1][1], qr|^GET "/foo" \(\w+\) 200 OK \(\d+\.?\d*s\)$|, 'access log'
   or diag explain \@log;
 
 done_testing;

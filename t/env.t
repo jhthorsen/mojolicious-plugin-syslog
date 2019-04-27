@@ -17,7 +17,7 @@ get '/foo' => sub {
 $ENV{MOJO_SYSLOG_FACILITY}   = 'local0';
 $ENV{MOJO_SYSLOG_IDENT}      = 'cool_app';
 $ENV{MOJO_SYSLOG_LOGOPT}     = 'pid';
-$ENV{MOJO_SYSLOG_ENABLED}    = '1';
+$ENV{MOJO_SYSLOG_ENABLE}     = '1';
 $ENV{MOJO_SYSLOG_ACCESS_LOG} = '%H %P %C';
 
 plugin syslog => {only_syslog => 1};
