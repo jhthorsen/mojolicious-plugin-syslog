@@ -5,6 +5,10 @@ use Test::More;
 plan skip_all => 'TEST_ONLINE=1' unless $ENV{TEST_ONLINE};
 
 use Mojolicious::Lite;
+get '/foo' => sub {
+  my $c = shift;
+  Mojo::IOLoop->timer(0.1 => sub { $c->render(text => 'foo') });
+};
 my @original_subscribers = message_subscribers();
 is @original_subscribers, 1, 'original message subscriber';
 
@@ -24,6 +28,7 @@ is @only_syslog, 1, 'only syslog subscribed';
 is $only_syslog[0], $both_subscribers[-1], 'syslog is first';
 
 my @log;
+app->log->level('debug');
 app->log->on(message => sub { shift; push @log, [@_] });
 app->log->$_("dummy test $_") for qw(debug info warn error fatal);
 is_deeply(
@@ -37,6 +42,15 @@ is_deeply(
   ],
   'messages logged',
 );
+
+plugin syslog => {access_log => 1};
+my $t = Test::Mojo->new;
+$t->app->log->level('info');
+$t->get_ok('/foo')->status_is(200)->content_is('foo');
+my $num_re = qr{\d+\.?\d*};
+like $log[-1][1], qr|^GET "/foo" \(\w+\) 200 OK \(${num_re}s, $num_re/s\)$|,
+  'access log'
+  or diag explain \@log;
 
 done_testing;
 
