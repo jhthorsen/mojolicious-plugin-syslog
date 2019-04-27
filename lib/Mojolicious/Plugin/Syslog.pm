@@ -12,19 +12,21 @@ my %PRIORITY = (
 );
 
 sub register {
-  my ($self, $app, $config) = @_;
-  my %config = %{$config || {}};
+  my ($self, $app, $params) = @_;
+  my %config = %{$params || {}};
 
-  $config{enable} //= $app->mode ne 'development';
+  $config{enable} //= $ENV{MOJO_SYSLOG_ENABLED} // $app->mode ne 'development';
   return unless $config{enable};
 
-  $config{facility} ||= LOG_USER;
-  $config{ident}    ||= $app->moniker;
-  $config{logopt}   ||= 'ndelay,pid';
+  $config{facility} ||= $ENV{MOJO_SYSLOG_FACILITY} || LOG_USER;
+  $config{ident}    ||= $ENV{MOJO_SYSLOG_IDENT}    || $app->moniker;
+  $config{logopt}   ||= $ENV{MOJO_SYSLOG_LOGOPT}   || 'ndelay,pid';
+
+  $config{access_log} //= $ENV{MOJO_SYSLOG_ACCESS_LOG};
   $config{access_log} = '%H "%P" (%I) %C %M (%Ts, %R/s)'
     if ($config{access_log} || '') eq '1';
 
-  openlog @$config{qw(ident logopt facility)};
+  openlog @config{qw(ident logopt facility)};
   $app->log->unsubscribe('message') if $config{only_syslog};
   $app->log->unsubscribe(message => \&_syslog);
   $app->log->on(message => \&_syslog);
@@ -73,7 +75,7 @@ sub _add_access_log {
 
 sub _syslog {
   my ($log, $level, @lines) = @_;
-  syslog $PRIORITY{$level}, '%s', $_ for @lines;
+  syslog $PRIORITY{$level}, '%s', $_ for map { chomp; $_ } @lines;
 }
 
 1;
