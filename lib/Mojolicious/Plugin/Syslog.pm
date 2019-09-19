@@ -14,30 +14,21 @@ my %PRIORITY = (
 );
 
 sub register {
-  my ($self, $app, $params) = @_;
-  my %config = %{$params || {}};
+  my ($self, $app, $config) = @_;
 
-  $config{enable} //= $ENV{MOJO_SYSLOG_ENABLE} // $app->mode ne 'development';
-  return unless $config{enable};
+  $self->_add_syslog($app, %$config)
+    if $config->{enable} // $ENV{MOJO_SYSLOG_ENABLE}
+    // $app->mode ne 'development';
 
-  $config{facility} ||= $ENV{MOJO_SYSLOG_FACILITY} || LOG_USER;
-  $config{ident}    ||= $ENV{MOJO_SYSLOG_IDENT}    || $app->moniker;
-  $config{logopt}   ||= $ENV{MOJO_SYSLOG_LOGOPT}   || 'ndelay,pid';
-
-  $config{access_log} //= $ENV{MOJO_SYSLOG_ACCESS_LOG};
-  $config{access_log} = '%H "%P" (%I) %C %M (%Ts)'
-    if ($config{access_log} || '') eq '1';
-
-  openlog @config{qw(ident logopt facility)};
-  $app->log->unsubscribe('message') if $config{only_syslog};
-  $app->log->unsubscribe(message => \&_syslog);
-  $app->log->on(message => \&_syslog);
-
-  $self->_add_access_log($app, \%config) if $config{access_log};
+  $self->_add_access_log($app, %$config)
+    if $config->{access_log} // $ENV{MOJO_SYSLOG_ACCESS_LOG};
 }
 
 sub _add_access_log {
-  my ($self, $app, $config) = @_;
+  my ($self, $app, %config) = @_;
+
+  my $log_format = $config{access_log} || $ENV{MOJO_SYSLOG_ACCESS_LOG} || '1';
+  $log_format = '%H "%P" (%I) %C %M (%Ts)' if $log_format eq '1';
 
   $app->hook(
     before_routes => sub {
@@ -66,11 +57,24 @@ sub _add_access_log {
       );
 
       my $level   = $res->is_server_error ? 'warn' : 'info';
-      my $message = $config->{access_log};
+      my $message = $log_format;
       $message =~ s!\%([CHIMPRT])!$MSG{$1}!g;
       $c->app->log->$level($message);
     }
   );
+}
+
+sub _add_syslog {
+  my ($self, $app, %config) = @_;
+
+  $config{facility} ||= $ENV{MOJO_SYSLOG_FACILITY} || LOG_USER;
+  $config{ident}    ||= $ENV{MOJO_SYSLOG_IDENT}    || $app->moniker;
+  $config{logopt}   ||= $ENV{MOJO_SYSLOG_LOGOPT}   || 'ndelay,pid';
+
+  openlog @config{qw(ident logopt facility)};
+  $app->log->unsubscribe('message') if $config{only_syslog};
+  $app->log->unsubscribe(message => \&_syslog);
+  $app->log->on(message => \&_syslog);
 }
 
 sub _syslog {
@@ -98,6 +102,10 @@ L<Mojo::Log> use L<Sys::Syslog> in addition (or instead) of file logging.
 
 This can be useful when starting Hypnotoad through Systemd, but want simple
 logging of error messages to syslog.
+
+This plugin can also be used for only access logging, as an alternative to
+L<Mojolicious::Plugin::AccessLog>. This is done by forcing L</enable> to
+"0" and enabling L</access_log>.
 
 =head1 METHODS
 
