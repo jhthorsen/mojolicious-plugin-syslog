@@ -15,6 +15,10 @@ Mojolicious::Plugin::Syslog - A plugin for enabling a Mojolicious app to log to 
 This can be useful when starting Hypnotoad through Systemd, but want simple
 logging of error messages to syslog.
 
+This plugin can also be used for only access logging, as an alternative to
+[Mojolicious::Plugin::AccessLog](https://metacpan.org/pod/Mojolicious::Plugin::AccessLog). This is done by forcing ["enable"](#enable) to
+"0" and enabling ["access\_log"](#access_log).
+
 # METHODS
 
 ## register
@@ -30,20 +34,35 @@ config parameters are:
     Used to enable logging of access to resources with a route enpoint. This means
     that static files will not be logged, even if this option is enabled.
 
-    This can be "1" or a string. Will use the default format, if "1" is specified:
+    This can be "v1" or a string. Will use the default format, if "v1" is specified:
 
         %H "%P" (%I) %C %M (%Ts)
          |   |    |   |  |   \- Time in seconds for this request
-         |   |    |   |  \- Response message, ex "OK"
-         |   |    |   \- Response code, ex 200, 404, ...
+         |   |    |   |  \- Response message
+         |   |    |   \- Response code
          |   |    \- A unique identified for this request
          |   \- The path requested
-         \- The HTTP method used, ex GET, POST ...
+         \- The HTTP method used
 
     Default to the "MOJO\_SYSLOG\_ACCESS\_LOG" environment variable or disabled by
     default.
 
-    This feature and format is highly EXPERIMENTAL.
+    The default format is EXPERIMENTAL.
+
+    Supported log variables:
+
+        | Variable | Value                                   |
+        |----------|-----------------------------------------|
+        | %A       | User-Agent request header               |
+        | %C       | Response status code, ex "200"          |
+        | %F       | Referer request header                  |
+        | %H       | HTTP request method, ex "GET", "POST"   |
+        | %I       | Mojolicious request ID                  |
+        | %M       | Response message, ex OK                 |
+        | %P       | Request URL path                        |
+        | %R       | Remote address                          |
+        | %T       | Time in seconds for this request        |
+        | %U       | Absolute request URL, without user info |
 
 - enable
 
