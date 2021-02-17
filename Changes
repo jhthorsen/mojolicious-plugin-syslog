@@ -1,5 +1,8 @@
 Revision history for perl distribution Mojolicious-Plugin-Syslog
 
+0.04 Not Released
+ - Compatible with Mojolicious 9.0
+
 0.03 2019-09-22T21:10:50+0900
  - Made env.t compatible with latest Mojolicious
 

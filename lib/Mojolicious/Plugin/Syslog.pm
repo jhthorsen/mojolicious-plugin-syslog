@@ -79,8 +79,8 @@ sub _add_syslog {
 }
 
 sub _syslog {
-  my ($log, $level, @lines) = @_;
-  syslog $PRIORITY{$level}, '%s', $_ for map { chomp; $_ } @lines;
+  my ($log, $level, @msg) = @_;
+  syslog $PRIORITY{$level}, '%s', join ' ', @msg;
 }
 
 1;
