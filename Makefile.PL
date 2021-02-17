@@ -8,8 +8,9 @@ my %WriteMakefileArgs = (
   ABSTRACT_FROM  => 'lib/Mojolicious/Plugin/Syslog.pm',
   VERSION_FROM   => 'lib/Mojolicious/Plugin/Syslog.pm',
   EXE_FILES      => [qw()],
+  OBJECT         => '',
   BUILD_REQUIRES => {},
-  TEST_REQUIRES  => {'Test::More' => '0.88'},
+  TEST_REQUIRES  => {'Test::More'  => '0.88'},
   PREREQ_PM      => {'Mojolicious' => '8.00', 'Sys::Syslog' => '0.35'},
   META_MERGE     => {
     'dynamic_config' => 0,

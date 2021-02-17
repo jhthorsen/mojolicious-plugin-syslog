@@ -9,14 +9,14 @@ Mojolicious::Plugin::Syslog - A plugin for enabling a Mojolicious app to log to 
 
 # DESCRIPTION
 
-[Mojolicious::Plugin::Syslog](https://metacpan.org/pod/Mojolicious::Plugin::Syslog) is a [Mojolicious](https://metacpan.org/pod/Mojolicious) plugin for making
-[Mojo::Log](https://metacpan.org/pod/Mojo::Log) use [Sys::Syslog](https://metacpan.org/pod/Sys::Syslog) in addition (or instead) of file logging.
+[Mojolicious::Plugin::Syslog](https://metacpan.org/pod/Mojolicious%3A%3APlugin%3A%3ASyslog) is a [Mojolicious](https://metacpan.org/pod/Mojolicious) plugin for making
+[Mojo::Log](https://metacpan.org/pod/Mojo%3A%3ALog) use [Sys::Syslog](https://metacpan.org/pod/Sys%3A%3ASyslog) in addition (or instead) of file logging.
 
 This can be useful when starting Hypnotoad through Systemd, but want simple
 logging of error messages to syslog.
 
 This plugin can also be used for only access logging, as an alternative to
-[Mojolicious::Plugin::AccessLog](https://metacpan.org/pod/Mojolicious::Plugin::AccessLog). This is done by forcing ["enable"](#enable) to
+[Mojolicious::Plugin::AccessLog](https://metacpan.org/pod/Mojolicious%3A%3APlugin%3A%3AAccessLog). This is done by forcing ["enable"](#enable) to
 "0" and enabling ["access\_log"](#access_log).
 
 # METHODS
@@ -84,7 +84,7 @@ config parameters are:
 
 - only\_syslog
 
-    Set this to true to disabled the default [Mojo::Log](https://metacpan.org/pod/Mojo::Log) logging to file/stderr.
+    Set this to true to disabled the default [Mojo::Log](https://metacpan.org/pod/Mojo%3A%3ALog) logging to file/stderr.
 
 # AUTHOR
 
