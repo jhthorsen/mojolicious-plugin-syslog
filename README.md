@@ -32,25 +32,23 @@ config parameters are:
 - access\_log
 
     Used to enable logging of access to resources with a route enpoint. This means
-    that static files will not be logged, even if this option is enabled.
+    that static files will not be logged, even if this option is enabled. It is
+    also possible to set the default value using the `MOJO_SYSLOG_ACCESS_LOG`
+    environment variable.
 
-    This can be "v1" or a string. Will use the default format, if "v1" is specified:
+    This can be "v1", "v2" or a custom format. The default is currently "v1", but
+    that might change in the future.
 
-        %H "%P" (%I) %C %M (%Ts)
-         |   |    |   |  |   \- Time in seconds for this request
-         |   |    |   |  \- Response message
-         |   |    |   \- Response code
-         |   |    \- A unique identified for this request
-         |   \- The path requested
-         \- The HTTP method used
-
-    Default to the "MOJO\_SYSLOG\_ACCESS\_LOG" environment variable or disabled by
-    default.
-
-    The default format is EXPERIMENTAL.
+        .---------------------------------------.
+        | Version | Format                      |
+        |---------|-----------------------------|
+        | v1      | %H "%P" (%I) %C %M (%Ts)    |
+        | v2      | %R %H %U %C "%F" "%A" (%Ts) |
+        '---------------------------------------'
 
     Supported log variables:
 
+        .----------------------------------------------------.
         | Variable | Value                                   |
         |----------|-----------------------------------------|
         | %A       | User-Agent request header               |
@@ -63,6 +61,7 @@ config parameters are:
         | %R       | Remote address                          |
         | %T       | Time in seconds for this request        |
         | %U       | Absolute request URL, without user info |
+        '----------------------------------------------------'
 
 - enable
 
