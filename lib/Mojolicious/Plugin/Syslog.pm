@@ -83,7 +83,7 @@ sub _add_syslog {
 
 sub _syslog {
   my ($log, $level, @msg) = @_;
-  syslog $PRIORITY{$level}, '%s', join ' ', @msg;
+  syslog $PRIORITY{$level}, '%s', join ' ', @msg if $PRIORITY{$level};
 }
 
 1;
